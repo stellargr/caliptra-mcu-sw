@@ -14,8 +14,8 @@ use ocp_eat::ocp_profile::{
     IntegrityRegisterEntry, IntegrityRegisterIdChoice, TaggedConciseEvidence,
 };
 use ocp_eat::{
-    ClassMap, ConciseEvidence, ConciseEvidenceMap, DigestEntry, EnvironmentMap, EvTriplesMap,
-    EvidenceTripleRecord, MeasurementMap, MeasurementValue,
+    ClassIdTypeChoice, ClassMap, ConciseEvidence, ConciseEvidenceMap, DigestEntry, EnvironmentMap,
+    EvTriplesMap, EvidenceTripleRecord, MeasurementMap, MeasurementValue, TaggedOid, VersionMap,
 };
 use spdm_lib::measurements::{MeasurementsError, MeasurementsResult};
 use zerocopy::IntoBytes;
@@ -52,7 +52,7 @@ const DEFAULT_MEAS_VALUE: MeasurementValue = MeasurementValue {
 
 const DEFAULT_ENV_MAP: EnvironmentMap = EnvironmentMap {
     class: ClassMap {
-        class_id: "",
+        class_id: ClassIdTypeChoice::TaggedOid(TaggedOid::new(b"")),
         vendor: None,
         model: None,
     },
@@ -84,12 +84,12 @@ fn build_environment_maps() -> [EnvironmentMap<'static>; TOTAL_TARGET_ENV] {
     let mut arr = [DEFAULT_ENV_MAP; TOTAL_TARGET_ENV];
 
     for (i, id) in DEFAULT_FW_IDS.iter().enumerate() {
-        arr[i].class.class_id = id;
+        arr[i].class.class_id = ClassIdTypeChoice::TaggedOid(TaggedOid::new(id.as_bytes()));
     }
 
     for (i, id) in SOC_FW_ID_STRS.iter().enumerate() {
         let idx = NUM_DEFAULT_FW_COMPONENTS + i;
-        arr[idx].class.class_id = id;
+        arr[idx].class.class_id = ClassIdTypeChoice::TaggedOid(TaggedOid::new(id.as_bytes()));
         arr[idx].class.vendor = Some(SOC_VENDOR);
         arr[idx].class.model = Some(SOC_MODEL);
     }
@@ -204,7 +204,10 @@ pub async fn generate_claims(claims_buf: &mut [u8], nonce: &[u8]) -> Measurement
         measurement_maps[i] = MeasurementMap {
             key: i as u64,
             mval: MeasurementValue {
-                version: Some(&version_fields[i].buf),
+                version: Some(VersionMap {
+                    version: &version_fields[i].buf,
+                    version_scheme: None,
+                }),
                 svn: Some(svns[i] as u64),
                 digests: Some(&digest_entries_arr[i]),
                 integrity_registers: Some(&integrity_registers_arr[i]),

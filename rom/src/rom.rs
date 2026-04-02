@@ -431,7 +431,7 @@ impl Soc {
             return HekState {
                 active_slot: 0,
                 total_slots: HEK_OFFSETS.len(),
-                active_state: HekSeedState::Permanent,
+                active_state: HekSeedState::ProgrammedEmpty,
             };
         }
 
@@ -442,7 +442,7 @@ impl Soc {
             return HekState {
                 active_slot: 0,
                 total_slots: HEK_OFFSETS.len(),
-                active_state: HekSeedState::Unused,
+                active_state: HekSeedState::Unavailable,
             };
         }
 
@@ -478,7 +478,7 @@ impl Soc {
             HekState {
                 active_slot: 0,
                 total_slots: HEK_OFFSETS.len(),
-                active_state: HekSeedState::Sanitized,
+                active_state: HekSeedState::Unavailable,
             }
         };
 

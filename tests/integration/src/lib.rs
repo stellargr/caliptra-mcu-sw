@@ -84,6 +84,7 @@ mod test {
         /// Optional bytes to prepend to the MCU firmware image (e.g., a manifest header).
         pub firmware_prefix: Option<Vec<u8>>,
         pub vendor_pqc_type: Option<caliptra_image_types::FwVerificationPqcKeyType>,
+        pub use_strap_secrets: bool,
     }
 
     impl Default for TestParams<'_> {
@@ -103,6 +104,7 @@ mod test {
                 custom_mcu_rom: None,
                 firmware_prefix: None,
                 vendor_pqc_type: Some(caliptra_image_types::FwVerificationPqcKeyType::LMS),
+                use_strap_secrets: false,
             }
         }
     }
@@ -436,6 +438,7 @@ mod test {
             primary_flash_initial_contents: flash_image,
             flash_boot: params.flash_boot,
             active_i3c1: params.active_i3c1,
+            use_strap_secrets: params.use_strap_secrets,
             ..Default::default()
         })
         .unwrap()

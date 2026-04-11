@@ -549,6 +549,12 @@ pub fn all_build(args: AllBuildArgs) -> Result<()> {
         base_runtime_features = runtime_features;
     }
 
+    // Always add "fpga" feature when building for FPGA platform so the
+    // runtime selects the correct IDevID endorsement certificate.
+    if platform == "fpga" {
+        base_runtime_features.push("fpga");
+    }
+
     let base_runtime_file = tempfile::NamedTempFile::new().unwrap();
     let base_runtime_path = base_runtime_file.path().to_str().unwrap();
 
@@ -678,6 +684,7 @@ pub fn all_build(args: AllBuildArgs) -> Result<()> {
                 output_name: Some(feature_runtime_path),
                 example_app: include_example_app,
                 platform: Some(platform),
+                fpga: platform == "fpga",
                 target_dir,
                 ..Default::default()
             })?;

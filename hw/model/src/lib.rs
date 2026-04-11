@@ -226,6 +226,10 @@ pub struct InitParams<'a> {
     pub flash_boot: bool,
 
     pub active_i3c1: bool,
+
+    /// When true, set secrets_valid so DOE reads UDS/FE from strap registers
+    /// for deterministic IDevID on FPGA (needed for attestation tests).
+    pub use_strap_secrets: bool,
 }
 
 impl InitParams<'_> {
@@ -297,6 +301,7 @@ impl Default for InitParams<'_> {
             caliptra_soc_axi_user: None,
             flash_boot: false,
             active_i3c1: false,
+            use_strap_secrets: false,
         }
     }
 }
